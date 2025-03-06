@@ -1,12 +1,11 @@
 "use client";
 
-import ClientProvider from "@/components/ClientProvider";
-import ThemeToggle from "@/components/ThemeToggle";
+import SignIn from "@/components/SignIn";
 
 export default function Home() {
   return (
-    <ClientProvider>
-      <ThemeToggle />
-    </ClientProvider>
+    <main className="flex items-center justify-center h-screen bg-black text-white">
+      <SignIn />
+    </main>
   );
 }
