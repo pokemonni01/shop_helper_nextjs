@@ -1,11 +1,16 @@
 "use client";
 
 import { auth } from "@/lib/firebaseConfig";
-import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+  User,
+} from "firebase/auth";
 import { useState } from "react";
 
 export default function SignIn() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
