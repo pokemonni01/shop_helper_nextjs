@@ -29,10 +29,12 @@ export default function ProductGrid({ filterText }: ProductGridProps) {
     const unsubscribe = onValue(productsRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        const productList = Object.entries(data).map(([id, product]) => ({
-          id,
-          ...(product as Product),
-        }));
+        const productList = Object.entries(data).map(
+          ([productId, product]) => ({
+            productId,
+            ...(product as Product),
+          })
+        );
         setProducts(productList);
       }
     });
@@ -91,8 +93,9 @@ export default function ProductGrid({ filterText }: ProductGridProps) {
             <button
               onClick={() => handleDelete(product.id, product.imageUrl)}
               className="w-full py-1 rounded text-white bg-red-600 hover:bg-red-800"
+              disabled={isDeleting}
             >
-              Delete
+              {isDeleting ? "Deleting..." : "Delete"}
             </button>
           </div>
         ))}
