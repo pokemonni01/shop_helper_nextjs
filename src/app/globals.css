@@ -24,3 +24,13 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.black-and-white {
+  background-color: black;
+  color: white;
+}
+
+.default {
+  background-color: white;
+  color: black;
+}
