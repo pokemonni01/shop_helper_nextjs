@@ -2,7 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Default styles for dark mode */
 body {
-  background-color: #000;
-  color: #fff;
+  @apply bg-black text-white;
+}
+
+/* Styling for scrollbars (optional) */
+::-webkit-scrollbar {
+  width: 8px;
+  background-color: #2d2d2d;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #777;
+}
+
+/* Link styles */
+a {
+  @apply text-blue-400 hover:text-blue-500;
+}
+
+/* Button styles */
+button {
+  @apply bg-gray-800 text-white py-2 px-4 rounded hover:bg-gray-700 transition-colors;
+}
+
+/* Card styles */
+.card {
+  @apply bg-gray-900 text-white rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow;
 }

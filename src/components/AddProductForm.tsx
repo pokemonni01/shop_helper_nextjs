@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/router";
 import { addProduct } from "@/lib/addProduct";
 import { storage } from "@/lib/firebaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -13,6 +14,7 @@ export default function AddProductForm() {
     price: "",
   });
 
+  const router = useRouter();
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -85,6 +87,7 @@ export default function AddProductForm() {
         price: "",
       });
       setImageFile(null);
+      router.push("/");
     } catch (error) {
       console.error("Error adding product:", error);
       setMessage("Failed to add product.");

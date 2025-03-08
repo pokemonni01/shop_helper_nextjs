@@ -16,7 +16,11 @@ type Product = {
   imageUrl: string;
 };
 
-export default function ProductGrid() {
+interface ProductGridProps {
+  filterText: string;
+}
+
+export default function ProductGrid({ filterText }: ProductGridProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -55,11 +59,18 @@ export default function ProductGrid() {
     }
   };
 
+  // Filter products based on filterText
+  const filteredProducts = products.filter(
+    (product) =>
+      product.name_en.toLowerCase().includes(filterText.toLowerCase()) ||
+      product.name_th.toLowerCase().includes(filterText.toLowerCase())
+  );
+
   return (
     <div className="p-4">
       <h2 className="text-xl text-white mb-4">Product List</h2>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-        {products.map((product) => (
+        {filteredProducts.map((product) => (
           <div
             key={product.id}
             className="bg-white text-black p-4 rounded-lg shadow hover:shadow-lg transition-shadow w-full"
