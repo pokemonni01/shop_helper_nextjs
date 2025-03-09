@@ -3,7 +3,6 @@ import { ref, push, set } from "firebase/database";
 
 export const addProduct = async (product: {
   name_th: string;
-  name_en: string;
   price: number;
   imageUrl: string;
 }) => {
