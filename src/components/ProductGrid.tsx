@@ -30,7 +30,7 @@ export default function ProductGrid({ filterText }: ProductGridProps) {
         const productList = Object.entries(data).map(([id, product]) => {
           const typedProduct = product as Product;
           return {
-            id,
+            id: id,
             name_th: typedProduct.name_th,
             name_en: typedProduct.name_en,
             price: typedProduct.price,

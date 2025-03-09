@@ -1,3 +1,4 @@
+import "../styles/globals.css";
 import AddProductForm from "../components/AddProductForm";
 
 const AddProduct = () => {
