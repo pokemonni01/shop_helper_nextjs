@@ -54,24 +54,20 @@ export default function EditProductForm({ product }: ProductFormProps) {
 
   // Compress and upload image to Firebase Storage
   const uploadImage = async (file: File): Promise<string> => {
-    // Compression options
     const options = {
-      maxSizeMB: 1, // Max size in MB (adjust as needed)
-      maxWidthOrHeight: 800, // Max width or height in pixels
-      useWebWorker: true, // Use web worker for better performance
+      maxSizeMB: 1,
+      maxWidthOrHeight: 800,
+      useWebWorker: true,
     };
 
-    // Compress image
     const compressedFile = await imageCompression(file, options);
     console.log("Original size:", file.size / 1024, "KB");
     console.log("Compressed size:", compressedFile.size / 1024, "KB");
 
-    // Generate a random name for the image
     const randomName = uuidv4();
     const fileExtension = file.name.split(".").pop();
     const newFileName = `${randomName}.${fileExtension}`;
 
-    // Upload compressed image with the new random name
     const storageRef = ref(storage, `products/${newFileName}`);
     const snapshot = await uploadBytes(storageRef, compressedFile);
     const downloadURL = await getDownloadURL(snapshot.ref);
@@ -92,7 +88,7 @@ export default function EditProductForm({ product }: ProductFormProps) {
 
     try {
       setIsUploading(true);
-      const imageUrl = await uploadImage(imageFile); // Upload image and get URL
+      const imageUrl = await uploadImage(imageFile);
       setIsUploading(false);
 
       await addProduct({
@@ -101,7 +97,7 @@ export default function EditProductForm({ product }: ProductFormProps) {
         imageUrl,
       });
 
-      setMessage("Product edit successfully!");
+      setMessage("Product updated successfully!");
       setFormData({
         name_th: "",
         price: "",
@@ -110,8 +106,8 @@ export default function EditProductForm({ product }: ProductFormProps) {
       setImagePreview(null);
       router.push("/");
     } catch (error) {
-      console.error("Error adding product:", error);
-      setMessage("Failed to add product.");
+      console.error("Error updating product:", error);
+      setMessage("Failed to update product.");
     } finally {
       setIsSubmitting(false);
     }
@@ -176,8 +172,8 @@ export default function EditProductForm({ product }: ProductFormProps) {
           {isUploading
             ? "Uploading Image..."
             : isSubmitting
-            ? "Adding..."
-            : "Add Product"}
+            ? "Updating..."
+            : "Update Product"}
         </button>
         {message && (
           <p className="text-center text-sm text-red-500">{message}</p>
