@@ -3,8 +3,7 @@ import AddProductForm from "../components/AddProductForm";
 
 const AddProduct = () => {
   return (
-    <main>
-      <h1>Add Product</h1>
+    <main className="p-4">
       <AddProductForm />
     </main>
   );

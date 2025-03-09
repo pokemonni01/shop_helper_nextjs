@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/router";
+import Image from "next/image";
 import { addProduct } from "@/lib/addProduct";
 import { storage } from "@/lib/firebaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import imageCompression from "browser-image-compression";
+import { AiOutlineClose } from "react-icons/ai";
 
 export default function AddProductForm() {
   const [formData, setFormData] = useState({
@@ -16,6 +18,7 @@ export default function AddProductForm() {
 
   const router = useRouter();
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState("");
@@ -33,6 +36,15 @@ export default function AddProductForm() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     setImageFile(file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string); // Set base64 URL as preview
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setImagePreview(null);
+    }
   };
 
   // Compress and upload image to Firebase Storage
@@ -87,6 +99,7 @@ export default function AddProductForm() {
         price: "",
       });
       setImageFile(null);
+      setImagePreview(null);
       router.push("/");
     } catch (error) {
       console.error("Error adding product:", error);
@@ -98,10 +111,37 @@ export default function AddProductForm() {
 
   return (
     <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg text-black">
-      <h2 className="text-2xl font-semibold mb-4 text-center">
-        Add New Product
-      </h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-2xl font-semibold">Add New Product</h2>
+        <button
+          onClick={() => router.push("/")}
+          className="text-gray-500 hover:text-gray-700 transition-colors bg-transparent border-none outline-none cursor-pointer p-0 m-0"
+        >
+          <AiOutlineClose size={24} color="black" />
+        </button>
+      </div>
+      {imagePreview && (
+        <div
+          className="w-100 mx-auto relative mb-4"
+          style={{ paddingTop: "133.33%" }}
+        >
+          <Image
+            src={imagePreview}
+            alt="Selected"
+            layout="fill"
+            objectFit="cover"
+            className="rounded"
+            unoptimized
+          />
+        </div>
+      )}
       <div className="space-y-4">
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          className="w-full p-2 border rounded"
+        />
         <input
           type="text"
           name="name_th"
@@ -124,12 +164,6 @@ export default function AddProductForm() {
           placeholder="Price (THB)"
           value={formData.price}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
-        />
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageChange}
           className="w-full p-2 border rounded"
         />
         <button

@@ -55,6 +55,11 @@ export default function ProductGrid({ filterText }: ProductGridProps) {
       const imageRef = storageRef(storage, imageUrl);
       await deleteObject(imageRef);
 
+      // Update local state to remove the deleted product
+      setProducts((prevProducts) =>
+        prevProducts.filter((product) => product.id !== productId)
+      );
+
       console.log("Product deleted successfully!");
     } catch (error) {
       console.error("Error deleting product:", error);
