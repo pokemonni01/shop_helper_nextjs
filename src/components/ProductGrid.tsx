@@ -78,11 +78,11 @@ export default function ProductGrid({ filterText }: ProductGridProps) {
   return (
     <div className="h-screen overflow-hidden">
       <h2 className="text-xl text-white mb-4">รายการสินค้า</h2>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 h-full overflow-y-auto">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
         {filteredProducts.map((product) => (
           <div
             key={product.id}
-            className="bg-white text-black p-4 rounded-lg shadow hover:shadow-lg transition-shadow w-full"
+            className="bg-white text-black p-4 rounded-lg shadow hover:shadow-lg transition-shadow"
           >
             <div className="relative w-full h-40 mb-2">
               <Image

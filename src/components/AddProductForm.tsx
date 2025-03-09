@@ -78,7 +78,7 @@ export default function AddProductForm() {
   const handleSubmit = async () => {
     const { name_th, name_en, price } = formData;
 
-    if (!name_th || !name_en || !price || !imageFile) {
+    if (!name_th || !price || !imageFile) {
       setMessage("Please fill in all fields and select an image.");
       return;
     }
@@ -153,14 +153,6 @@ export default function AddProductForm() {
           name="name_th"
           placeholder="Product Name (Thai)"
           value={formData.name_th}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-        />
-        <input
-          type="text"
-          name="name_en"
-          placeholder="Product Name (English)"
-          value={formData.name_en}
           onChange={handleChange}
           className="w-full p-2 border rounded"
         />
