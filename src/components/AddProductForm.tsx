@@ -8,6 +8,7 @@ import { storage } from "@/lib/firebaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import imageCompression from "browser-image-compression";
 import { AiOutlineClose } from "react-icons/ai";
+import { v4 as uuidv4 } from "uuid";
 
 export default function AddProductForm() {
   const [formData, setFormData] = useState({
@@ -61,8 +62,13 @@ export default function AddProductForm() {
     console.log("Original size:", file.size / 1024, "KB");
     console.log("Compressed size:", compressedFile.size / 1024, "KB");
 
-    // Upload compressed image
-    const storageRef = ref(storage, `products/${compressedFile.name}`);
+    // Generate a random name for the image
+    const randomName = uuidv4();
+    const fileExtension = file.name.split(".").pop();
+    const newFileName = `${randomName}.${fileExtension}`;
+
+    // Upload compressed image with the new random name
+    const storageRef = ref(storage, `products/${newFileName}`);
     const snapshot = await uploadBytes(storageRef, compressedFile);
     const downloadURL = await getDownloadURL(snapshot.ref);
     return downloadURL;
