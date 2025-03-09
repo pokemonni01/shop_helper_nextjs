@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import { addProduct } from "@/lib/addProduct";
+import { updateProduct } from "@/lib/productService"; // Updated import
 import { storage } from "@/lib/firebaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import imageCompression from "browser-image-compression";
@@ -27,6 +27,17 @@ export default function EditProductForm({ product }: ProductFormProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState("");
+  const [isModified, setIsModified] = useState(false);
+
+  // Check for changes
+  useEffect(() => {
+    const isFormModified =
+      formData.name_th !== product.name_th ||
+      formData.price !== product.price.toString() ||
+      imageFile !== null;
+
+    setIsModified(isFormModified);
+  }, [formData, imageFile, product]);
 
   // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,7 +55,7 @@ export default function EditProductForm({ product }: ProductFormProps) {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string); // Set base64 URL as preview
+        setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     } else {
@@ -61,8 +72,6 @@ export default function EditProductForm({ product }: ProductFormProps) {
     };
 
     const compressedFile = await imageCompression(file, options);
-    console.log("Original size:", file.size / 1024, "KB");
-    console.log("Compressed size:", compressedFile.size / 1024, "KB");
 
     const randomName = uuidv4();
     const fileExtension = file.name.split(".").pop();
@@ -78,8 +87,8 @@ export default function EditProductForm({ product }: ProductFormProps) {
   const handleSubmit = async () => {
     const { name_th, price } = formData;
 
-    if (!name_th || !price || !imageFile) {
-      setMessage("Please fill in all fields and select an image.");
+    if (!name_th || !price) {
+      setMessage("Please fill in all fields.");
       return;
     }
 
@@ -88,22 +97,22 @@ export default function EditProductForm({ product }: ProductFormProps) {
 
     try {
       setIsUploading(true);
-      const imageUrl = await uploadImage(imageFile);
+      let imageUrl = product.imageUrl; // Default to current image URL
+
+      if (imageFile) {
+        imageUrl = await uploadImage(imageFile);
+      }
       setIsUploading(false);
 
-      await addProduct({
+      // Use updateProduct instead of addProduct
+      await updateProduct(product.id, {
+        ...product,
         name_th,
         price: Number(price),
         imageUrl,
       });
 
       setMessage("Product updated successfully!");
-      setFormData({
-        name_th: "",
-        price: "",
-      });
-      setImageFile(null);
-      setImagePreview(null);
       router.push("/");
     } catch (error) {
       console.error("Error updating product:", error);
@@ -162,10 +171,10 @@ export default function EditProductForm({ product }: ProductFormProps) {
         />
         <button
           onClick={handleSubmit}
-          disabled={isSubmitting || isUploading}
+          disabled={!isModified || isSubmitting || isUploading}
           className={`w-full p-2 rounded text-white ${
-            isSubmitting || isUploading
-              ? "bg-gray-500"
+            !isModified || isSubmitting || isUploading
+              ? "bg-gray-500 cursor-not-allowed"
               : "bg-black hover:bg-gray-800"
           }`}
         >

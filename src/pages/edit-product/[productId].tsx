@@ -10,8 +10,6 @@ const EditProductPage = () => {
   const { productId } = router.query;
 
   const [product, setProduct] = useState<Product | null>(null);
-  const [name, setName] = useState<string>("");
-  const [price, setPrice] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,8 +19,6 @@ const EditProductPage = () => {
         try {
           const productData = await getProductById(productId as string);
           setProduct(productData);
-          setName(productData.name_th || "");
-          setPrice(productData.price.toString() || "");
           setLoading(false);
         } catch (err) {
           setError("Failed to fetch product");
@@ -32,20 +28,6 @@ const EditProductPage = () => {
       fetchProduct();
     }
   }, [productId]);
-
-  const handleUpdate = async () => {
-    if (!name || !price) {
-      setError("Name and price are required");
-      return;
-    }
-    try {
-      await updateProduct(productId as string, product!);
-      alert("Product updated successfully!");
-      router.push("/"); // Redirect after successful update
-    } catch (err) {
-      setError("Failed to update product");
-    }
-  };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;

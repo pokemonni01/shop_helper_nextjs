@@ -9,8 +9,8 @@ export const getProductById = async (productId: string): Promise<Product> => {
   const snapshot = await get(productRef);
 
   if (snapshot.exists()) {
-    // Cast the snapshot value to the Product type
-    return snapshot.val() as Product;
+    const productData = snapshot.val();
+    return { ...productData, id: productId } as Product;
   } else {
     throw new Error("Product not found");
   }
@@ -21,6 +21,7 @@ export const updateProduct = async (
   productId: string,
   productData: Product
 ) => {
+  console.log("productData", productId);
   const productRef = ref(realtimeDB, `products/${productId}`);
   await update(productRef, productData);
 };
