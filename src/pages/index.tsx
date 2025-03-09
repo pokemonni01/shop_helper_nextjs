@@ -18,11 +18,11 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="flex flex-col items-center justify-center h-screen bg-black text-white p-16">
+    <main className="p-4">
       <input
         type="text"
-        placeholder="Filter products"
-        className="mb-4 p-2 rounded text-black"
+        placeholder="ค้นหาสินค้าที่นี่"
+        className="p-2 rounded text-black items-center w-full mb-4"
         onChange={handleFilterChange}
       />
       <ProductGrid filterText={filterText} />

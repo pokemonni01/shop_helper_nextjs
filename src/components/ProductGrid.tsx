@@ -29,22 +29,20 @@ export default function ProductGrid({ filterText }: ProductGridProps) {
     const unsubscribe = onValue(productsRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        const productList = Object.entries(data).map(
-          ([productId, product]) => ({
-            productId,
-            ...(product as Product),
-          })
-        );
+        const productList = Object.entries(data).map(([id, product]) => ({
+          id,
+          ...(product as Product),
+        }));
         setProducts(productList);
       }
     });
     return () => unsubscribe();
   }, []);
 
-  // Handle delete product
   const handleDelete = async (productId: string, imageUrl: string) => {
     setIsDeleting(true);
     try {
+      console.log("Deleting product with ID:", productId);
       // Delete product from Realtime Database
       const productRef = ref(realtimeDB, `products/${productId}`);
       await remove(productRef);
@@ -55,7 +53,13 @@ export default function ProductGrid({ filterText }: ProductGridProps) {
 
       console.log("Product deleted successfully!");
     } catch (error) {
-      console.error("Error deleting product:", error);
+      if (error.code === "storage/object-not-found") {
+        console.warn(
+          "Image not found in storage, but product deleted from database."
+        );
+      } else {
+        console.error("Error deleting product:", error);
+      }
     } finally {
       setIsDeleting(false);
     }
@@ -67,11 +71,11 @@ export default function ProductGrid({ filterText }: ProductGridProps) {
       product.name_en.toLowerCase().includes(filterText.toLowerCase()) ||
       product.name_th.toLowerCase().includes(filterText.toLowerCase())
   );
-
+  console.log("filteredProducts:", filteredProducts);
   return (
-    <div className="p-4">
-      <h2 className="text-xl text-white mb-4">Product List</h2>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="h-screen overflow-hidden">
+      <h2 className="text-xl text-white mb-4">รายการสินค้า</h2>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 h-full overflow-y-auto">
         {filteredProducts.map((product) => (
           <div
             key={product.id}
