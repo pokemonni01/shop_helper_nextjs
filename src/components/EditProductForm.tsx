@@ -9,12 +9,16 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import imageCompression from "browser-image-compression";
 import { AiOutlineClose } from "react-icons/ai";
 import { v4 as uuidv4 } from "uuid";
+import { Product } from "@/types/product";
 
-export default function AddProductForm() {
+interface ProductFormProps {
+  product: Product;
+}
+
+export default function EditProductForm({ product }: ProductFormProps) {
   const [formData, setFormData] = useState({
-    name_th: "",
-    name_en: "",
-    price: "",
+    name_th: product.name_th,
+    price: product.price.toString(),
   });
 
   const router = useRouter();
@@ -97,10 +101,9 @@ export default function AddProductForm() {
         imageUrl,
       });
 
-      setMessage("Product added successfully!");
+      setMessage("Product edit successfully!");
       setFormData({
         name_th: "",
-        name_en: "",
         price: "",
       });
       setImageFile(null);
@@ -117,7 +120,7 @@ export default function AddProductForm() {
   return (
     <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg text-black">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-semibold">Add New Product</h2>
+        <h2 className="text-2xl font-semibold">Edit Product</h2>
         <button
           onClick={() => router.push("/")}
           className="text-gray-500 hover:text-gray-700 transition-colors bg-transparent border-none outline-none cursor-pointer p-0 m-0"
@@ -125,21 +128,19 @@ export default function AddProductForm() {
           <AiOutlineClose size={24} color="black" />
         </button>
       </div>
-      {imagePreview && (
-        <div
-          className="w-100 mx-auto relative mb-4"
-          style={{ paddingTop: "133.33%" }}
-        >
-          <Image
-            src={imagePreview}
-            alt="Selected"
-            layout="fill"
-            objectFit="cover"
-            className="rounded"
-            unoptimized
-          />
-        </div>
-      )}
+      <div
+        className="w-100 mx-auto relative mb-4"
+        style={{ paddingTop: "133.33%" }}
+      >
+        <Image
+          src={imagePreview || product.imageUrl}
+          alt="Selected"
+          layout="fill"
+          objectFit="cover"
+          className="rounded"
+          unoptimized
+        />
+      </div>
       <div className="space-y-4">
         <input
           type="file"

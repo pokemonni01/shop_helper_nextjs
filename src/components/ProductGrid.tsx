@@ -5,14 +5,8 @@ import { ref, onValue, remove } from "firebase/database";
 import { realtimeDB, storage } from "@/lib/firebaseConfig";
 import { deleteObject, ref as storageRef } from "firebase/storage";
 import Image from "next/image";
-
-type Product = {
-  id: string;
-  name_th: string;
-  name_en: string;
-  price: number;
-  imageUrl: string;
-};
+import { useRouter } from "next/router";
+import { Product } from "@/types/product";
 
 interface ProductGridProps {
   filterText: string;
@@ -21,6 +15,7 @@ interface ProductGridProps {
 export default function ProductGrid({ filterText }: ProductGridProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const productsRef = ref(realtimeDB, "products");
@@ -68,11 +63,14 @@ export default function ProductGrid({ filterText }: ProductGridProps) {
     }
   };
 
+  const handleEdit = (productId: string) => {
+    console.log("Editing product with ID:", productId);
+    router.push(`/edit-product/${productId}`);
+  };
+
   // Filter products based on filterText
-  const filteredProducts = products.filter(
-    (product) =>
-      product.name_en.toLowerCase().includes(filterText.toLowerCase()) ||
-      product.name_th.toLowerCase().includes(filterText.toLowerCase())
+  const filteredProducts = products.filter((product) =>
+    product.name_th.toLowerCase().includes(filterText.toLowerCase())
   );
   console.log("filteredProducts:", filteredProducts);
   return (
@@ -97,13 +95,21 @@ export default function ProductGrid({ filterText }: ProductGridProps) {
               {product.name_th} / {product.name_en}
             </h3>
             <p className="text-gray-600 mb-2">{product.price} THB</p>
-            <button
-              onClick={() => handleDelete(product.id, product.imageUrl)}
-              className="w-full py-1 rounded text-white bg-red-600 hover:bg-red-800"
-              disabled={isDeleting}
-            >
-              {isDeleting ? "Deleting..." : "Delete"}
-            </button>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => handleDelete(product.id, product.imageUrl)}
+                className="w-full py-1 rounded text-white bg-red-600 hover:bg-red-800"
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Deleting..." : "Delete"}
+              </button>
+              <button
+                onClick={() => handleEdit(product.id)}
+                className="w-full py-1 rounded text-white bg-blue-600 hover:bg-blue-800"
+              >
+                Edit
+              </button>
+            </div>
           </div>
         ))}
       </div>
