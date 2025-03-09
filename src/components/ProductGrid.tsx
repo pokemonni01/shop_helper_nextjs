@@ -10,8 +10,6 @@ type Product = {
   id: string;
   name_th: string;
   name_en: string;
-  name_mm: string;
-  name_cn: string;
   price: number;
   imageUrl: string;
 };
@@ -29,10 +27,16 @@ export default function ProductGrid({ filterText }: ProductGridProps) {
     const unsubscribe = onValue(productsRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        const productList = Object.entries(data).map(([id, product]) => ({
-          id,
-          ...(product as Product),
-        }));
+        const productList = Object.entries(data).map(([id, product]) => {
+          const typedProduct = product as Product;
+          return {
+            id,
+            name_th: typedProduct.name_th,
+            name_en: typedProduct.name_en,
+            price: typedProduct.price,
+            imageUrl: typedProduct.imageUrl,
+          };
+        });
         setProducts(productList);
       }
     });
@@ -53,13 +57,7 @@ export default function ProductGrid({ filterText }: ProductGridProps) {
 
       console.log("Product deleted successfully!");
     } catch (error) {
-      if (error.code === "storage/object-not-found") {
-        console.warn(
-          "Image not found in storage, but product deleted from database."
-        );
-      } else {
-        console.error("Error deleting product:", error);
-      }
+      console.error("Error deleting product:", error);
     } finally {
       setIsDeleting(false);
     }
