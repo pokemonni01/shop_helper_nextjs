@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ref, onValue, remove } from "firebase/database";
-import { realtimeDB, storage } from "@/lib/firebaseConfig";
-import { deleteObject, ref as storageRef } from "firebase/storage";
+import { ref, onValue } from "firebase/database";
+import { realtimeDB } from "@/lib/firebaseConfig";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { Product } from "@/types/product";
@@ -14,7 +13,6 @@ interface ProductGridProps {
 
 export default function ProductGrid({ filterText }: ProductGridProps) {
   const [products, setProducts] = useState<Product[]>([]);
-  const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -37,31 +35,6 @@ export default function ProductGrid({ filterText }: ProductGridProps) {
     return () => unsubscribe();
   }, []);
 
-  const handleDelete = async (productId: string, imageUrl: string) => {
-    setIsDeleting(true);
-    try {
-      console.log("Deleting product with ID:", productId);
-      // Delete product from Realtime Database
-      const productRef = ref(realtimeDB, `products/${productId}`);
-      await remove(productRef);
-
-      // Delete image from Firebase Storage
-      const imageRef = storageRef(storage, imageUrl);
-      await deleteObject(imageRef);
-
-      // Update local state to remove the deleted product
-      setProducts((prevProducts) =>
-        prevProducts.filter((product) => product.id !== productId)
-      );
-
-      console.log("Product deleted successfully!");
-    } catch (error) {
-      console.error("Error deleting product:", error);
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
   const handleEdit = (productId: string) => {
     console.log("Editing product with ID:", productId);
     router.push(`/edit-product/${productId}`);
@@ -75,44 +48,39 @@ export default function ProductGrid({ filterText }: ProductGridProps) {
   console.log("filteredProducts:", filteredProducts);
 
   return (
-    <div className="h-screen flex flex-col">
-      <h2 className="text-xl text-white mb-4">รายการสินค้า</h2>
-      <div className="flex-1 overflow-y-auto">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-          {filteredProducts.map((product) => (
-            <div
-              key={product.id}
-              className="bg-white text-black p-4 rounded-lg shadow hover:shadow-lg transition-shadow"
-            >
-              <div className="relative w-full h-40 mb-2">
-                <Image
-                  src={product.imageUrl}
-                  alt={product.name_th}
-                  fill
-                  className="object-cover rounded-md"
-                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
-                />
-              </div>
-              <h3 className="text-lg font-semibold mb-1">{product.name_th}</h3>
-              <p className="text-gray-600 mb-2">{product.price} THB</p>
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => handleDelete(product.id, product.imageUrl)}
-                  className="w-full py-1 rounded text-white bg-red-600 hover:bg-red-800"
-                  disabled={isDeleting}
-                >
-                  {isDeleting ? "Deleting..." : "Delete"}
-                </button>
-                <button
-                  onClick={() => handleEdit(product.id)}
-                  className="w-full py-1 rounded text-white bg-blue-600 hover:bg-blue-800"
-                >
-                  Edit
-                </button>
-              </div>
+    <div className="min-h-screen p-4">
+      <h2 className="text-xl mb-4">รายการสินค้า</h2>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        {filteredProducts.map((product) => (
+          <div
+            key={product.id}
+            className="bg-white text-black p-4 rounded-lg shadow hover:shadow-lg transition-shadow"
+          >
+            <div className="relative w-full h-40 mb-2">
+              <Image
+                src={product.imageUrl}
+                alt={product.name_th}
+                fill
+                className="object-cover rounded-md"
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
+              />
             </div>
-          ))}
-        </div>
+            <div className="h-12 mb-1 flex">
+              <h3 className="text-lg font-semibold line-clamp-2">
+                {product.name_th}
+              </h3>
+            </div>
+            <p className="text-gray-600 mb-2">
+              {Number(product.price).toLocaleString()} THB
+            </p>
+            <button
+              onClick={() => handleEdit(product.id)}
+              className="w-full py-1 rounded text-white bg-blue-600 hover:bg-blue-800"
+            >
+              Edit
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   );
