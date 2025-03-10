@@ -71,44 +71,48 @@ export default function ProductGrid({ filterText }: ProductGridProps) {
   const filteredProducts = products.filter((product) =>
     product.name_th.toLowerCase().includes(filterText.toLowerCase())
   );
+
   console.log("filteredProducts:", filteredProducts);
+
   return (
-    <div className="h-screen overflow-hidden">
+    <div className="h-screen flex flex-col">
       <h2 className="text-xl text-white mb-4">รายการสินค้า</h2>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-        {filteredProducts.map((product) => (
-          <div
-            key={product.id}
-            className="bg-white text-black p-4 rounded-lg shadow hover:shadow-lg transition-shadow"
-          >
-            <div className="relative w-full h-40 mb-2">
-              <Image
-                src={product.imageUrl}
-                alt={product.name_th}
-                fill
-                className="object-cover rounded-md"
-                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
-              />
+      <div className="flex-1 overflow-y-auto">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+          {filteredProducts.map((product) => (
+            <div
+              key={product.id}
+              className="bg-white text-black p-4 rounded-lg shadow hover:shadow-lg transition-shadow"
+            >
+              <div className="relative w-full h-40 mb-2">
+                <Image
+                  src={product.imageUrl}
+                  alt={product.name_th}
+                  fill
+                  className="object-cover rounded-md"
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
+                />
+              </div>
+              <h3 className="text-lg font-semibold mb-1">{product.name_th}</h3>
+              <p className="text-gray-600 mb-2">{product.price} THB</p>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => handleDelete(product.id, product.imageUrl)}
+                  className="w-full py-1 rounded text-white bg-red-600 hover:bg-red-800"
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? "Deleting..." : "Delete"}
+                </button>
+                <button
+                  onClick={() => handleEdit(product.id)}
+                  className="w-full py-1 rounded text-white bg-blue-600 hover:bg-blue-800"
+                >
+                  Edit
+                </button>
+              </div>
             </div>
-            <h3 className="text-lg font-semibold mb-1">{product.name_th}</h3>
-            <p className="text-gray-600 mb-2">{product.price} THB</p>
-            <div className="flex space-x-2">
-              <button
-                onClick={() => handleDelete(product.id, product.imageUrl)}
-                className="w-full py-1 rounded text-white bg-red-600 hover:bg-red-800"
-                disabled={isDeleting}
-              >
-                {isDeleting ? "Deleting..." : "Delete"}
-              </button>
-              <button
-                onClick={() => handleEdit(product.id)}
-                className="w-full py-1 rounded text-white bg-blue-600 hover:bg-blue-800"
-              >
-                Edit
-              </button>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
