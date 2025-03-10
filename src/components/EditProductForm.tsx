@@ -3,9 +3,14 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import { updateProduct } from "@/lib/productService"; // Updated import
+import { updateProduct, deleteProduct } from "@/lib/productService";
 import { storage } from "@/lib/firebaseConfig";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
 import imageCompression from "browser-image-compression";
 import { AiOutlineClose } from "react-icons/ai";
 import { v4 as uuidv4 } from "uuid";
@@ -28,6 +33,7 @@ export default function EditProductForm({ product }: ProductFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState("");
   const [isModified, setIsModified] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Check for changes
   useEffect(() => {
@@ -122,6 +128,28 @@ export default function EditProductForm({ product }: ProductFormProps) {
     }
   };
 
+  const handleDelete = async (productId: string, imageUrl: string) => {
+    setIsDeleting(true);
+    try {
+      console.log("Deleting product with ID:", productId);
+
+      // Delete image from Firebase Storage
+      const imageRef = ref(storage, imageUrl);
+      await deleteObject(imageRef);
+
+      // Delete product from Realtime Database
+      await deleteProduct(productId);
+
+      console.log("Product deleted successfully!");
+      setMessage("Product deleted successfully!");
+      router.push("/");
+    } catch (error) {
+      console.error("Error deleting product:", error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg text-black">
       <div className="flex items-center justify-between mb-4">
@@ -169,21 +197,34 @@ export default function EditProductForm({ product }: ProductFormProps) {
           onChange={handleChange}
           className="w-full p-2 border rounded"
         />
-        <button
-          onClick={handleSubmit}
-          disabled={!isModified || isSubmitting || isUploading}
-          className={`w-full p-2 rounded text-white ${
-            !isModified || isSubmitting || isUploading
-              ? "bg-gray-500 cursor-not-allowed"
-              : "bg-black hover:bg-gray-800"
-          }`}
-        >
-          {isUploading
-            ? "Uploading Image..."
-            : isSubmitting
-            ? "Updating..."
-            : "Update Product"}
-        </button>
+        <div className="flex space-x-2 mt-4">
+          <button
+            onClick={() => handleDelete(product.id, product.imageUrl)}
+            disabled={isDeleting}
+            className={`w-full p-2 rounded text-white ${
+              isDeleting
+                ? "bg-red-500 cursor-not-allowed"
+                : "bg-red-600 hover:bg-red-800"
+            }`}
+          >
+            {isDeleting ? "Deleting..." : "Delete Product"}
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={!isModified || isSubmitting || isUploading}
+            className={`w-full p-2 rounded text-white ${
+              !isModified || isSubmitting || isUploading
+                ? "bg-gray-500 cursor-not-allowed"
+                : "bg-black hover:bg-gray-800"
+            }`}
+          >
+            {isUploading
+              ? "Uploading Image..."
+              : isSubmitting
+              ? "Updating..."
+              : "Update Product"}
+          </button>
+        </div>
         {message && (
           <p className="text-center text-sm text-red-500">{message}</p>
         )}

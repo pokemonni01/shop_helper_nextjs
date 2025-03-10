@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ref, onValue, remove } from "firebase/database";
-import { realtimeDB, storage } from "@/lib/firebaseConfig";
-import { deleteObject, ref as storageRef } from "firebase/storage";
+import { ref, onValue } from "firebase/database";
+import { realtimeDB } from "@/lib/firebaseConfig";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { Product } from "@/types/product";
@@ -14,7 +13,6 @@ interface ProductGridProps {
 
 export default function ProductGrid({ filterText }: ProductGridProps) {
   const [products, setProducts] = useState<Product[]>([]);
-  const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -36,31 +34,6 @@ export default function ProductGrid({ filterText }: ProductGridProps) {
     });
     return () => unsubscribe();
   }, []);
-
-  const handleDelete = async (productId: string, imageUrl: string) => {
-    setIsDeleting(true);
-    try {
-      console.log("Deleting product with ID:", productId);
-      // Delete product from Realtime Database
-      const productRef = ref(realtimeDB, `products/${productId}`);
-      await remove(productRef);
-
-      // Delete image from Firebase Storage
-      const imageRef = storageRef(storage, imageUrl);
-      await deleteObject(imageRef);
-
-      // Update local state to remove the deleted product
-      setProducts((prevProducts) =>
-        prevProducts.filter((product) => product.id !== productId)
-      );
-
-      console.log("Product deleted successfully!");
-    } catch (error) {
-      console.error("Error deleting product:", error);
-    } finally {
-      setIsDeleting(false);
-    }
-  };
 
   const handleEdit = (productId: string) => {
     console.log("Editing product with ID:", productId);

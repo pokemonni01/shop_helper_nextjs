@@ -1,6 +1,6 @@
 // src/lib/productService.ts
 import { realtimeDB } from "./firebaseConfig";
-import { ref, get, update } from "firebase/database";
+import { ref, get, update, remove } from "firebase/database";
 import { Product } from "@/types/product";
 
 // Fetch a single product by ID
@@ -24,4 +24,10 @@ export const updateProduct = async (
   console.log("productData", productId);
   const productRef = ref(realtimeDB, `products/${productId}`);
   await update(productRef, productData);
+};
+
+// Delete a product by ID
+export const deleteProduct = async (productId: string) => {
+  const productRef = ref(realtimeDB, `products/${productId}`);
+  await remove(productRef);
 };
