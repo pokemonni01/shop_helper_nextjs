@@ -27,7 +27,6 @@ export default function ProductGrid({ filterText }: ProductGridProps) {
           return {
             id: id,
             name_th: typedProduct.name_th,
-            name_en: typedProduct.name_en,
             price: typedProduct.price,
             imageUrl: typedProduct.imageUrl,
           };
@@ -85,15 +84,13 @@ export default function ProductGrid({ filterText }: ProductGridProps) {
             <div className="relative w-full h-40 mb-2">
               <Image
                 src={product.imageUrl}
-                alt={product.name_en}
+                alt={product.name_th}
                 fill
                 className="object-cover rounded-md"
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
               />
             </div>
-            <h3 className="text-lg font-semibold mb-1">
-              {product.name_th} / {product.name_en}
-            </h3>
+            <h3 className="text-lg font-semibold mb-1">{product.name_th}</h3>
             <p className="text-gray-600 mb-2">{product.price} THB</p>
             <div className="flex space-x-2">
               <button
