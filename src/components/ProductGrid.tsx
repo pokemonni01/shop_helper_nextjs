@@ -70,7 +70,9 @@ export default function ProductGrid({ filterText }: ProductGridProps) {
                 {product.name_th}
               </h3>
             </div>
-            <p className="text-gray-600 mb-2">{product.price} THB</p>
+            <p className="text-gray-600 mb-2">
+              {Number(product.price).toLocaleString()} THB
+            </p>
             <button
               onClick={() => handleEdit(product.id)}
               className="w-full py-1 rounded text-white bg-blue-600 hover:bg-blue-800"
