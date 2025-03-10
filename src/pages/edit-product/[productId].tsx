@@ -1,7 +1,7 @@
 import "../../styles/globals.css";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { getProductById, updateProduct } from "@/lib/productService";
+import { getProductById } from "@/lib/productService";
 import { Product } from "@/types/product";
 import EditProductForm from "@/components/EditProductForm";
 
@@ -21,6 +21,7 @@ const EditProductPage = () => {
           setProduct(productData);
           setLoading(false);
         } catch (err) {
+          console.error("Error fetching product:", err);
           setError("Failed to fetch product");
           setLoading(false);
         }
